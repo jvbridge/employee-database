@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/jvbridge/employee-database#readme",
   "dependencies": {
+    "console.table": "^0.10.0",
     "inquirer": "^8.2.4",
     "jest": "^28.0.3",
     "mysql2": "^2.3.3"
