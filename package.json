@@ -1,0 +1,30 @@
+{
+  "name": "employee-database",
+  "version": "1.0.0",
+  "description": "a command line based employee tracker that accesses a mysql database",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jvbridge/employee-database.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jvbridge/employee-database/issues"
+  },
+  "homepage": "https://github.com/jvbridge/employee-database#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.4",
+    "jest": "^28.0.3",
+    "mysql2": "^2.3.3"
+  }
+}
