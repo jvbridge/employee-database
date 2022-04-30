@@ -35,7 +35,7 @@ VALUES
     ("Medical", 100, 
         (SELECT id FROM department WHERE department_name = "Science")
     ),
-    ("Counsilor", 100, 
+    ("Counselor", 100, 
         (SELECT id FROM department WHERE department_name = "Science")
     ),
     ("Science", 100, 
@@ -98,7 +98,7 @@ VALUES
         )
     ),
     ("Deanna", "Troi", 
-        (SELECT id FROM role WHERE title = "Counsilor"), 
+        (SELECT id FROM role WHERE title = "counselor"), 
         (SELECT * FROM 
             (SELECT id FROM employee WHERE last_name = "Picard") as id
         )
