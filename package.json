@@ -2,12 +2,13 @@
   "name": "employee-database",
   "version": "1.0.0",
   "description": "a command line based employee tracker that accesses a mysql database",
-  "main": "index.js",
+  "main": "server.js",
   "directories": {
     "lib": "lib",
     "test": "test"
   },
   "scripts": {
+    "start": "node server.js",
     "test": "jest"
   },
   "repository": {
