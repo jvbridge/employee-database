@@ -150,13 +150,18 @@ function addDepartment() {
  * the menu
  */
 function viewAllRoles() {
-    db.query(`SELECT title, department_id, salary FROM role`, (err, result) => {
-        if (err) {
-            console.error("Recieved error:\n", err);
+    db.query(
+        `SELECT title AS \`Title\`, 
+    (SELECT department_name FROM department WHERE id = role.department_id) AS Department
+    , salary FROM role`,
+        (err, result) => {
+            if (err) {
+                console.error("Recieved error:\n", err);
+            }
+            console.table(result);
+            mainMenu();
         }
-        console.table(result);
-        mainMenu();
-    });
+    );
 }
 
 // options for the main menu
