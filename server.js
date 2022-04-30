@@ -22,12 +22,11 @@ _____           _                       _ _
             |_|       |___|                    
 `;
 
-// TODO: do IDs ever get set? Database should handle them
-
 function viewAllEmployees() {
+    console.info("Querying the database...");
     db.query(`SELECT * FROM employee`, (err, result) => {
         if (err) {
-            console.error("Error in querying employees: ", err);
+            console.error("Error in querying employees:\n", err);
         } else {
             console.table(result);
             mainMenu();
@@ -35,8 +34,22 @@ function viewAllEmployees() {
     });
 }
 
-function addEmployee() {
-    // TODO: create employee and update Db
+function addEmployeeQuery() {
+    console.info("Querying the database...");
+
+    db.query(`SELECT role.id, role.title FROM role`, (err, result) => {
+        if (err) {
+            console.error("Error in querying roles:\n", err);
+        } else {
+            addEmployeePrompt(result);
+        }
+    });
+}
+
+function addEmployeePrompt(queryResult) {
+    const roles = queryResult.map((ele) => {
+        return ele.title;
+    });
     inquirer
         .prompt([
             {
@@ -51,13 +64,14 @@ function addEmployee() {
             },
             {
                 name: "role",
-                type: "input", // TODO: query database to get roles
+                type: "list",
+                choices: roles,
                 message: "what is their role?",
             },
             {
                 name: "manager",
-                type: "input", // TODO: query database to get managers
-                message: "Who is their manager?",
+                type: "confirm",
+                message: "Would you like to add a manager?",
             },
         ])
         .then((ans) => {
@@ -121,7 +135,7 @@ function mainMenu() {
                     viewAllEmployees();
                     break;
                 case "Add Employee":
-                    addEmployee();
+                    addEmployeeQuery();
                     break;
                 case "Update Employee Role":
                     updateEmployeeRole();
@@ -136,7 +150,8 @@ function mainMenu() {
                     addDepartment();
                     break;
                 case "Quit":
-                    console.log("Thank you for using EMPLOYEE DB");
+                    console.info("Thank you for using EMPLOYEE DB");
+                    process.exit(1);
                     break;
             }
         })
