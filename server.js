@@ -148,11 +148,11 @@ function addDepartment() {
 // options for the main menu
 const mainMenuOptions = [
     "View All Employees",
-    "Add Employee",
-    "Update Employee Role",
-    "Add Role",
-    "View All Departments",
-    "Add Department",
+    "Add Employee (WIP)",
+    "Update Employee Role (WIP)",
+    "Add Role (WIP)",
+    "View All Departments (WIP)",
+    "Add Department (WIP)",
     "Quit",
 ];
 
