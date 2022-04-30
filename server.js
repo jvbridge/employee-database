@@ -1,7 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const cTable = require("console.table");
-const { listenerCount } = require("process");
 
 /**
  * Simple string to greet user
@@ -14,6 +13,71 @@ _____           _                       _ _
             |_|       |___|                    
 `;
 
+// TODO: do IDs ever get set? Database should handle them
+
+function viewAllEmployees() {
+    // TODO: query
+    console.log("query the DB here");
+    mainMenu();
+}
+
+function addEmployee() {
+    // TODO: create employee and update Db
+    inquirer
+        .prompt([
+            {
+                name: "firstName",
+                type: "input",
+                message: "What is their first name?",
+            },
+            {
+                name: "lastName",
+                type: "input",
+                message: "What is their lastName?",
+            },
+            {
+                name: "role",
+                type: "input", // TODO: query database to get roles
+                message: "what is their role?",
+            },
+            {
+                name: "manager",
+                type: "input", // TODO: query database to get managers
+                message: "Who is their manager?",
+            },
+        ])
+        .then((ans) => {
+            console.log("add employee");
+        });
+
+    mainMenu();
+}
+
+function updateEmployeeRole() {
+    // TODO: get employee and change role
+    console.log("update employee role");
+    mainMenu();
+}
+
+function addRole() {
+    // TODO: create a role and add to it
+    console.log("Add role");
+    mainMenu();
+}
+
+function viewAllDepartments() {
+    // TODO: return all departments
+    console.log("view all departments");
+    mainMenu();
+}
+
+function addDepartment() {
+    // TODO: prompts for departments
+    console.log("Add Department");
+    mainMenu();
+}
+
+// options for the main menu
 const mainMenuOptions = [
     "View All Employees",
     "Add Employee",
@@ -36,11 +100,35 @@ function mainMenu() {
             choices: mainMenuOptions,
         })
         .then((ans) => {
-            console.log(`Got answer: ${ans.menuChoice}`);
+            switch (ans.menuChoice) {
+                case "View All Employees":
+                    viewAllEmployees();
+                    break;
+                case "Add Employee":
+                    addEmployee();
+                    break;
+                case "Update Employee Role":
+                    updateEmployeeRole();
+                    break;
+                case "Add Role":
+                    addRole();
+                    break;
+                case "View All Departments":
+                    viewAllDepartments();
+                    break;
+                case "Add Department":
+                    addDepartment();
+                    break;
+                case "Quit":
+                    console.log("Thank you for using EMPLOYEE DB");
+                    break;
+            }
         })
         .catch((err) => {
             if (err.isTtyError) {
                 throw new Error("This shell is not supported");
+            } else {
+                console.error("Got error: ", err);
             }
         });
 }
