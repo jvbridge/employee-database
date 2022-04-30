@@ -124,9 +124,16 @@ function addRole() {
  * This will allow the user to see all the departments availible
  */
 function viewAllDepartments() {
-    // TODO: return all departments
-    console.log("view all departments");
-    mainMenu();
+    db.query(
+        `SELECT department_name AS \`Department Name\` FROM department `,
+        (err, result) => {
+            if (err) {
+                console.error("Got an error querying departments:\n", err);
+            }
+            console.table(result);
+            mainMenu();
+        }
+    );
 }
 
 /**
@@ -183,7 +190,7 @@ function mainMenu() {
                     break;
                 case "Quit":
                     console.info("Thank you for using EMPLOYEE DB");
-                    process.exit(1);
+                    process.exit(0);
                     break;
             }
         })
@@ -192,6 +199,7 @@ function mainMenu() {
                 throw new Error("This shell is not supported");
             } else {
                 console.error("Got error: ", err);
+                process.exit(1);
             }
         });
 }
