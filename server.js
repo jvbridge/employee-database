@@ -145,13 +145,28 @@ function addDepartment() {
     mainMenu();
 }
 
+/**
+ * This will show the user all the possible roles and then send them back to
+ * the menu
+ */
+function viewAllRoles() {
+    db.query(`SELECT title, department_id, salary FROM role`, (err, result) => {
+        if (err) {
+            console.error("Recieved error:\n", err);
+        }
+        console.table(result);
+        mainMenu();
+    });
+}
+
 // options for the main menu
 const mainMenuOptions = [
     "View All Employees",
+    "View All Departments",
+    "View All Roles",
     "Add Employee (WIP)",
     "Update Employee Role (WIP)",
     "Add Role (WIP)",
-    "View All Departments (WIP)",
     "Add Department (WIP)",
     "Quit",
 ];
@@ -173,6 +188,12 @@ function mainMenu() {
                 case "View All Employees":
                     viewAllEmployees();
                     break;
+                case "View All Departments":
+                    viewAllDepartments();
+                    break;
+                case "View All Roles":
+                    viewAllRoles();
+                    break;
                 case "Add Employee":
                     addEmployeeQuery();
                     break;
@@ -181,9 +202,6 @@ function mainMenu() {
                     break;
                 case "Add Role":
                     addRole();
-                    break;
-                case "View All Departments":
-                    viewAllDepartments();
                     break;
                 case "Add Department":
                     addDepartment();
