@@ -1,7 +1,9 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
+// ctable isn't referenced because we an use `console.table` instead
 const cTable = require("console.table");
 
+// database connection
 const db = mysql.createConnection(
     {
         host: "127.0.0.1",
@@ -11,6 +13,7 @@ const db = mysql.createConnection(
     },
     console.log("creating connection to database")
 );
+
 /**
  * Simple string to greet user
  */
@@ -22,6 +25,10 @@ _____           _                       _ _
             |_|       |___|                    
 `;
 
+/**
+ * Puts a list of all employees into the command line and then returns the user
+ * to the main menu
+ */
 function viewAllEmployees() {
     console.info("Querying the database...");
     db.query(`SELECT * FROM employee`, (err, result) => {
@@ -34,6 +41,11 @@ function viewAllEmployees() {
     });
 }
 
+/**
+ * Function is called when we are making a new employee. It queries the database
+ * to fine the appropriate roles for the employee and then hands the output off
+ * to a helper function to avoid more "callback hell"
+ */
 function addEmployeeQuery() {
     console.info("Querying the database...");
 
@@ -46,10 +58,16 @@ function addEmployeeQuery() {
     });
 }
 
-function addEmployeePrompt(queryResult) {
-    const roles = queryResult.map((ele) => {
-        return ele.title;
-    });
+/**
+ * This is a helper function that guides the user into making a new employee.
+ * It will create the employee, and possibly specify a manager if needed.
+ * If a manager is needed to be specified it will hand off the problem to a
+ * another helper callback function
+ * @param {array} rolesArray - result of query, still needs formatting
+ */
+function addEmployeePrompt(rolesArray) {
+    // taking our results and making them appropriately formatted
+    const roles = rolesArray.map((ele) => ele.title);
     inquirer
         .prompt([
             {
@@ -83,24 +101,37 @@ function addEmployeePrompt(queryResult) {
         });
 }
 
+/**
+ * This will ask the user which employee they want to update and then allow them
+ * to choose which info to update
+ */
 function updateEmployeeRole() {
     // TODO: get employee and change role
     console.log("update employee role");
     mainMenu();
 }
 
+/**
+ * This will allow the user to add more roles to the database
+ */
 function addRole() {
     // TODO: create a role and add to it
     console.log("Add role");
     mainMenu();
 }
 
+/**
+ * This will allow the user to see all the departments availible
+ */
 function viewAllDepartments() {
     // TODO: return all departments
     console.log("view all departments");
     mainMenu();
 }
 
+/**
+ * This will allow the user add a new department
+ */
 function addDepartment() {
     // TODO: prompts for departments
     console.log("Add Department");
@@ -119,7 +150,8 @@ const mainMenuOptions = [
 ];
 
 /**
- * This will call up the main menu functions
+ * This will call up the main menu functions. When the user responds to the
+ * menu option it hands off operations to a helper function
  */
 function mainMenu() {
     inquirer
