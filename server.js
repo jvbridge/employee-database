@@ -47,10 +47,12 @@ function addEmployee() {
             },
         ])
         .then((ans) => {
-            console.log("add employee");
+            const { firstName, lastName, role, manager } = ans;
+            console.log(
+                `adding employee: ${firstName}, ${lastName}, ${role}, ${manager}`
+            );
+            mainMenu();
         });
-
-    mainMenu();
 }
 
 function updateEmployeeRole() {
