@@ -2,6 +2,15 @@ const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const cTable = require("console.table");
 
+const db = mysql.createConnection(
+    {
+        host: "127.0.0.1",
+        user: "root",
+        password: "password",
+        database: "employees_db",
+    },
+    console.log("creating connection to database")
+);
 /**
  * Simple string to greet user
  */
@@ -16,9 +25,14 @@ _____           _                       _ _
 // TODO: do IDs ever get set? Database should handle them
 
 function viewAllEmployees() {
-    // TODO: query
-    console.log("query the DB here");
-    mainMenu();
+    db.query(`SELECT * FROM employee`, (err, result) => {
+        if (err) {
+            console.error("Error in querying employees: ", err);
+        } else {
+            console.table(result);
+            mainMenu();
+        }
+    });
 }
 
 function addEmployee() {
