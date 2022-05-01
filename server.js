@@ -144,15 +144,22 @@ function addEmployee(firstName, lastName, roleId, manager) {
 }
 
 /**
- * This function is called when the employee wants to make a manager. We use it
- * because we need a second query to find all the other employees.
- * @param {object} ans the answers the user gave for making the new employee
+ * This function is called when the employee wants to designate an employee as
+ * a manager for a new employee.
  */
 function addEmployeeManager(ans) {
   const { firstName, lastName, role } = ans;
-
-  // query the database to get the managers
-  db.query("", (err, result) => {});
+  console.info("Okay, lets select which employee will be their manager!");
+  // get the department of their manager
+  selectDepartment((deptId) => {
+    // get the role of the manager
+    selectRole(deptId, (roleId) => {
+      // get the manager's id
+      selectEmployee(roleId, (managerId) => {
+        addEmployee(firstName, lastName, roleId, managerId);
+      });
+    });
+  });
 }
 
 /**
