@@ -18,7 +18,7 @@ const db = mysql.createConnection(
  * Simple string to greet user
  */
 const greetStr = `
-_____           _                       _ _   
+______           _                       _ _   
 |   __|_____ ___| |___ _ _ ___ ___ ___ _| | |_ 
 |   __|     | . | | . | | | -_| -_|___| . | . |
 |_____|_|_|_|  _|_|___|_  |___|___|   |___|___|
@@ -74,7 +74,7 @@ function addEmployeeQuery() {
  */
 function addEmployeePrompt(rolesArray) {
     // taking our results and making them appropriately formatted
-    const roles = rolesArray.map((ele) => ele.title);
+    const roleStrings = rolesArray.map((ele) => ele.title);
     inquirer
         .prompt([
             {
@@ -88,9 +88,9 @@ function addEmployeePrompt(rolesArray) {
                 message: "What is their lastName?",
             },
             {
-                name: "role",
+                name: "roleStr",
                 type: "list",
-                choices: roles,
+                choices: roleStrings,
                 message: "what is their role?",
             },
             {
@@ -100,12 +100,61 @@ function addEmployeePrompt(rolesArray) {
             },
         ])
         .then((ans) => {
-            const { firstName, lastName, role, manager } = ans;
-            console.log(
-                `adding employee: ${firstName}, ${lastName}, ${role}, ${manager}`
+            // Destructure answer object
+            const { firstName, lastName, roleStr, manager } = ans;
+            // getting the appropriate ID from the role chosen
+            const rawRole = rolesArray.find(
+                (element) => element.title == roleStr
             );
-            mainMenu();
+            const roleId = rawRole.id;
+
+            if (manager) {
+                // if they want to add a manager we need a separate query
+                addEmployeeManager(ans);
+            } else {
+                addEmployee(firstName, lastName, roleId);
+            }
         });
+}
+
+/**
+ * Adds an employee into the database, should use parsed user input
+ * @param {string} firstName the first name answered by the user
+ * @param {string} lastName the last name answered by the user
+ * @param {number} roleId the role chosen by the user
+ * @param {number} [manager] id for manager given, NULL if none given
+ */
+function addEmployee(firstName, lastName, roleId, manager) {
+    // check if manager argument was passed
+    const managerId = manager ? manager : null;
+
+    // do our insert into the database
+    db.query(
+        `INSERT INTO employee (
+            first_name, 
+            last_name, 
+            role_id, 
+            manager_id
+        )
+        VALUES(?, ?, ?, ?);`,
+        [firstName, lastName, roleId, managerId],
+        (err, result) => {
+            if (err) console.error("Error inserting employee:\n", err);
+            mainMenu();
+        }
+    );
+}
+
+/**
+ * This function is called when the employee wants to make a manager. We use it
+ * because we need a second query to find all the other employees.
+ * @param {object} ans the answers the user gave for making the new employee
+ */
+function addEmployeeManager(ans) {
+    const { firstName, lastName, role } = ans;
+
+    // query the database to get the managers
+    db.query("", (err, result) => {});
 }
 
 /**
@@ -176,7 +225,7 @@ const mainMenuOptions = [
     "View All Employees",
     "View All Departments",
     "View All Roles",
-    "Add Employee (WIP)",
+    "Add Employee",
     "Update Employee Role (WIP)",
     "Add Role (WIP)",
     "Add Department (WIP)",
