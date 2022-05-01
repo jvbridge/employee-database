@@ -18,7 +18,7 @@ const db = mysql.createConnection(
  * Simple string to greet user
  */
 const greetStr = `
-______           _                       _ _   
+ _____           _                       _ _   
 |   __|_____ ___| |___ _ _ ___ ___ ___ _| | |_ 
 |   __|     | . | | . | | | -_| -_|___| . | . |
 |_____|_|_|_|  _|_|___|_  |___|___|   |___|___|
@@ -177,6 +177,43 @@ function addRole() {
 }
 
 /**
+ * Prompts the user to select employees by department and role
+ * @param {function} cb - callback function with employee id passed in as
+ * the argument
+ */
+function selectEmployee(cb) {}
+
+/**
+ * Prompts the user to select a department
+ * @param {function} cb callback function with the department ID given as an
+ * argument
+ */
+function selectDepartment(cb) {
+    // main query
+    db.query("SELECT * from department", (err, results) => {
+        if (err) console.error("got an error querying for department:\n", err);
+        const departmentStrs = results.map((dept) => dept.department_name);
+        // ask the user which department based on query
+        inquirer
+            .prompt({
+                type: "list",
+                name: "departmentStr",
+                message: "Which department?",
+                choices: departmentStrs,
+            })
+            .then((ans) => {
+                // take their selection and call the callback function
+                const rawDepartment = results.find(
+                    (dept) => dept.department_name == ans.departmentStr
+                );
+                cb(rawDepartment.id);
+            });
+    });
+}
+
+function selectRole(cb) {}
+
+/**
  * This will allow the user to see all the departments availible
  */
 function viewAllDepartments() {
@@ -207,9 +244,13 @@ function addDepartment() {
  */
 function viewAllRoles() {
     db.query(
-        `SELECT title AS \`Title\`, 
-    (SELECT department_name FROM department WHERE id = role.department_id) AS Department
-    , salary FROM role`,
+        `SELECT title AS \`Title\`, (
+            SELECT 
+            department_name 
+            FROM department 
+            WHERE id = role.department_id
+        ) AS Department
+        , salary FROM role`,
         (err, result) => {
             if (err) {
                 console.error("Recieved error:\n", err);
@@ -222,6 +263,7 @@ function viewAllRoles() {
 
 // options for the main menu
 const mainMenuOptions = [
+    "Select",
     "View All Employees",
     "View All Departments",
     "View All Roles",
@@ -246,6 +288,12 @@ function mainMenu() {
         })
         .then((ans) => {
             switch (ans.menuChoice) {
+                case "Select":
+                    selectDepartment((id) => {
+                        console.log("chose ID: ", id);
+                        mainMenu();
+                    });
+                    break;
                 case "View All Employees":
                     viewAllEmployees();
                     break;
@@ -271,6 +319,9 @@ function mainMenu() {
                     console.info("Thank you for using EMPLOYEE DB");
                     process.exit(0);
                     break;
+                default:
+                    console.info("That option hasn't beem implemented yet");
+                    mainMenu();
             }
         })
         .catch((err) => {
