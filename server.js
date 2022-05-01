@@ -175,11 +175,14 @@ function addRole() {
 }
 
 /**
- * Prompts the user to select employees by department and role
- * @param {function} cb - callback function with employee id passed in as
- * the argument
+ * Prompts the user to select employees by role. Will list all given employees
+ * with that role and then ask the user to choose one. After the user chooses
+ * one the callback function will be executed with that employee's id as the
+ * argument
+ * @param {number} role  id number of the role
+ * @param {function} cb callback function to execute
  */
-function selectEmployee(cb) {}
+function selectEmployee(role, cb) {}
 
 /**
  * Prompts the user to select a department. Calls a callback function with a
