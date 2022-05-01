@@ -35,7 +35,7 @@ VALUES
     ("Medical", 100, 
         (SELECT id FROM department WHERE department_name = "Science")
     ),
-    ("Counsilor", 100, 
+    ("Counselor", 100, 
         (SELECT id FROM department WHERE department_name = "Science")
     ),
     ("Science", 100, 
@@ -73,13 +73,13 @@ VALUES
             (SELECT id FROM employee WHERE last_name = "Picard") as id
         )
     ),
-    ("Data", NULL, 
+    ("Data", "", 
         (SELECT id FROM role WHERE title = "Second Officer"), 
         (SELECT * FROM 
             (SELECT id FROM employee WHERE last_name = "Picard") as id
         )
     ),
-    ("Worf", NULL, 
+    ("Worf", "", 
         (SELECT id FROM role WHERE title = "Security"), 
         (SELECT * FROM 
             (SELECT id FROM employee WHERE last_name = "Picard") as id
@@ -98,7 +98,7 @@ VALUES
         )
     ),
     ("Deanna", "Troi", 
-        (SELECT id FROM role WHERE title = "Counsilor"), 
+        (SELECT id FROM role WHERE title = "counselor"), 
         (SELECT * FROM 
             (SELECT id FROM employee WHERE last_name = "Picard") as id
         )
@@ -130,7 +130,7 @@ VALUES
             (SELECT id FROM employee WHERE last_name = "Picard") as id
         )
     ),
-    ("Guinan", NULL,
+    ("Guinan", "",
         (SELECT id FROM role WHERE title = "Civilian"),
         (SELECT * FROM 
             (SELECT id FROM employee WHERE last_name = "Picard") as id
