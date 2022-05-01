@@ -195,10 +195,11 @@ function selectDepartment(cb) {
         if (err) console.error("got an error querying for department:\n", err);
         // check if we have any departments
         if (results.length == 0) {
-            console.error("No departments so far");
+            console.info("No departments so far");
             cb(null);
             return;
         }
+        // get the names for all the departments
         const departmentStrs = results.map((dept) => dept.department_name);
         // ask the user which department based on query
         inquirer
@@ -218,7 +219,44 @@ function selectDepartment(cb) {
     });
 }
 
-function selectRole(cb) {}
+/**
+ * Prompts the user to select a role with the given department, calls a callback
+ * function with the id of the role selected
+ * @param {number} department the ID of the department we are looking for roles
+ * @param {function} cb the callback function
+ */
+function selectRole(department, cb) {
+    // query db
+    db.query(
+        "SELECT * FROM role WHERE department_id = ?",
+        department,
+        (err, results) => {
+            if (err) console.error("got an error querying for roles:\n", err);
+            // check if we have any roles at all
+            if (results.length == 0) {
+                console.info("No roles so far");
+                cb(null);
+                return;
+            }
+            // get the titles from the roles
+            const roleStrs = results.map((role) => role.title);
+            inquirer
+                .prompt({
+                    type: "list",
+                    name: "roleStr",
+                    message: "Which role?",
+                    choices: roleStrs,
+                })
+                .then((ans) => {
+                    // get the id of their selection
+                    const rawRole = results.find(
+                        (role) => role.title == ans.roleStr
+                    );
+                    cb(rawRole.id);
+                });
+        }
+    );
+}
 
 /**
  * This will allow the user to see all the departments availible
@@ -296,9 +334,12 @@ function mainMenu() {
         .then((ans) => {
             switch (ans.menuChoice) {
                 case "Select":
-                    selectDepartment((id) => {
-                        console.log("chose ID: ", id);
-                        mainMenu();
+                    selectDepartment((deptId) => {
+                        console.log("chose department ID: ", deptId);
+                        selectRole(deptId, (roleId) => {
+                            console.log("chose role ID: ", roleId);
+                            mainMenu();
+                        });
                     });
                     break;
                 case "View All Employees":
