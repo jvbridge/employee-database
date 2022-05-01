@@ -178,11 +178,44 @@ function addRole() {
  * Prompts the user to select employees by role. Will list all given employees
  * with that role and then ask the user to choose one. After the user chooses
  * one the callback function will be executed with that employee's id as the
+ * argument. If there are none found we will execute it with null as the
  * argument
  * @param {number} role  id number of the role
  * @param {function} cb callback function to execute
  */
-function selectEmployee(role, cb) {}
+function selectEmployee(role, cb) {
+  // get all employees of the appropriate role
+  db.query("SELECT * FROM employee WHERE role_id = ?", role, (err, results) => {
+    if (err) console.error("got an error querying for employees:\n", err);
+    // check if there are employees
+    if (results.length == 0) {
+      console.info("No employees with that role so far");
+      cb(null); // callback function with null as argument
+      return;
+    }
+    // get a list of all the names of employees
+    const names = results.map((employee) => {
+      return employee.first_name + " " + employee.last_name;
+    });
+
+    inquirer
+      .prompt({
+        type: "list",
+        name: "fullName",
+        message: "Which employee?",
+        choices: names,
+      })
+      .then((ans) => {
+        // get the id of their selection
+        const rawEmployee = results.find((employee) => {
+          const fullName = employee.first_name + " " + employee.last_name;
+          return ans.fullName === fullName;
+        });
+        // call the callback with it
+        cb(rawEmployee.id);
+      });
+  });
+}
 
 /**
  * Prompts the user to select a department. Calls a callback function with a
@@ -251,6 +284,7 @@ function selectRole(department, cb) {
         .then((ans) => {
           // get the id of their selection
           const rawRole = results.find((role) => role.title == ans.roleStr);
+          // call our callback function with it
           cb(rawRole.id);
         });
     }
@@ -337,7 +371,10 @@ function mainMenu() {
             console.log("chose department ID: ", deptId);
             selectRole(deptId, (roleId) => {
               console.log("chose role ID: ", roleId);
-              mainMenu();
+              selectEmployee(roleId, (employeeId) => {
+                console.log("Chose employee id of: ", employeeId);
+                mainMenu();
+              });
             });
           });
           break;
