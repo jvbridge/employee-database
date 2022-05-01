@@ -348,7 +348,6 @@ function viewAllRoles() {
 
 // options for the main menu
 const mainMenuOptions = [
-  "Select",
   "View All Employees",
   "View All Departments",
   "View All Roles",
@@ -373,18 +372,6 @@ function mainMenu() {
     })
     .then((ans) => {
       switch (ans.menuChoice) {
-        case "Select":
-          selectDepartment((deptId) => {
-            console.log("chose department ID: ", deptId);
-            selectRole(deptId, (roleId) => {
-              console.log("chose role ID: ", roleId);
-              selectEmployee(roleId, (employeeId) => {
-                console.log("Chose employee id of: ", employeeId);
-                mainMenu();
-              });
-            });
-          });
-          break;
         case "View All Employees":
           viewAllEmployees();
           break;
