@@ -23,6 +23,15 @@ connect differently.
 
 It is entirely possible to use this product
 
+Some assumtions:
+
+1. There are more roles than departments
+2. there are more employees than roles
+
+Because of this when asking the user to specify an employee, we first ask them
+to specify a department and then specify a role. Similarly when asking to
+specify a role we ask them to specify a department first.
+
 ## Credits
 
 Greeting string made with the help of https://patorjk.com/software/taag
