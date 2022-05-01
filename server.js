@@ -184,14 +184,21 @@ function addRole() {
 function selectEmployee(cb) {}
 
 /**
- * Prompts the user to select a department
- * @param {function} cb callback function with the department ID given as an
- * argument
+ * Prompts the user to select a department. Calls a callback function with a
+ * department ID as the argument, if there are no deparments given we call it
+ * with null as an argument
+ * @param {function} cb callback function supplied
  */
 function selectDepartment(cb) {
     // main query
     db.query("SELECT * from department", (err, results) => {
         if (err) console.error("got an error querying for department:\n", err);
+        // check if we have any departments
+        if (results.length == 0) {
+            console.error("No departments so far");
+            cb(null);
+            return;
+        }
         const departmentStrs = results.map((dept) => dept.department_name);
         // ask the user which department based on query
         inquirer
