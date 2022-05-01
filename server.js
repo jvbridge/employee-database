@@ -8,7 +8,7 @@ const db = mysql.createConnection(
     {
         host: "127.0.0.1",
         user: "root",
-        password: "password",
+        password: "password", // Change this to YOUR password
         database: "employees_db",
     },
     console.log("creating connection to database")
@@ -31,14 +31,21 @@ _____           _                       _ _
  */
 function viewAllEmployees() {
     console.info("Querying the database...");
-    db.query(`SELECT * FROM employee`, (err, result) => {
-        if (err) {
-            console.error("Error in querying employees:\n", err);
-        } else {
-            console.table(result);
-            mainMenu();
+    db.query(
+        `SELECT 
+        CONCAT(employee.first_name, ' ', employee.last_name) AS Name,
+        role.title AS Title
+        FROM employee, role
+        WHERE role.id = employee.role_id`,
+        (err, result) => {
+            if (err) {
+                console.error("Error in querying employees:\n", err);
+            } else {
+                console.table(result);
+                mainMenu();
+            }
         }
-    });
+    );
 }
 
 /**
