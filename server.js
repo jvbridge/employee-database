@@ -39,10 +39,14 @@ const greetStr = `
 function viewAllEmployees() {
   db.query(
     `SELECT 
-        CONCAT(employee.first_name, ' ', employee.last_name) AS Name,
-        role.title AS Title
-        FROM employee, role
-        WHERE role.id = employee.role_id`,
+    CONCAT(e.first_name, ' ', e.last_name) AS Name,
+    role.title AS title, 
+    IFNULL(CONCAT(m.first_name, ' ', m.last_name), 'Top Manager') AS Manager
+    FROM employee e
+    LEFT JOIN employee m ON
+      m.id = e.manager_id
+    LEFT JOIN role ON role.id = e.role_id
+    ORDER BY e.role_id`,
     (err, result) => {
       if (err) {
         console.error("Error in querying employees:\n", err);
