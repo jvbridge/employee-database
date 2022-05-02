@@ -3,6 +3,11 @@ const mysql = require("mysql2");
 // ctable isn't referenced because we an use `console.table` instead
 const cTable = require("console.table");
 
+// max lengths for all of the different values in the sql database
+const DEPARTMENT_NAME_LENGTH = 30;
+const ROLE_TITLE_LENGTH = 30;
+const EMPLOYEE_NAME_LENGTH = 30;
+
 // database connection
 const db = mysql.createConnection(
   {
@@ -51,7 +56,7 @@ function viewAllEmployees() {
 
 /**
  * Function is called when we are making a new employee. It queries the database
- * to fine the appropriate roles for the employee and then hands the output off
+ * to find the appropriate roles for the employee and then hands the output off
  * to a helper function to avoid more "callback hell"
  */
 function addEmployeeQuery() {
@@ -112,6 +117,14 @@ function addEmployeePrompt(rolesArray) {
       // getting the appropriate ID from the role chosen
       const rawRole = rolesArray.find((element) => element.title == roleStr);
       const roleId = rawRole.id;
+      if (
+        firstName.length > EMPLOYEE_NAME_LENGTH ||
+        lastName.length > EMPLOYEE_NAME_LENGTH
+      ) {
+        console.info("Names must be 30 characters or less");
+        addEmployeePrompt();
+        return;
+      }
 
       if (manager) {
         // if they want to add a manager we need a separate query
@@ -350,9 +363,33 @@ function viewAllDepartments() {
  * This will allow the user add a new department
  */
 function addDepartment() {
-  // TODO: prompts for departments
-  console.log("Add Department");
-  mainMenu();
+  inquirer
+    .prompt({
+      name: "deptName",
+      type: "input",
+      message: "What is the name of this department?",
+    })
+    .then((ans) => {
+      if (ans.deptName.length > DEPARTMENT_NAME_LENGTH) {
+        console.info(
+          "Department names must be " +
+            DEPARTMENT_NAME_LENGTH +
+            " characters or less"
+        );
+        addDepartment();
+        return;
+      }
+      db.query(
+        `INSERT INTO department(department_name)
+          VALUES (?)
+        `,
+        ans.deptName,
+        (err, result) => {
+          if (err) console.error("Error inserting into department:\n", err);
+          mainMenu();
+        }
+      );
+    });
 }
 
 /**
@@ -362,12 +399,12 @@ function addDepartment() {
 function viewAllRoles() {
   db.query(
     `SELECT title AS \`Title\`, (
-            SELECT 
-            department_name 
-            FROM department 
-            WHERE id = role.department_id
-        ) AS Department
-        , salary FROM role`,
+        SELECT 
+        department_name 
+        FROM department 
+        WHERE id = role.department_id
+    ) AS Department
+    , salary FROM role`,
     (err, result) => {
       if (err) {
         console.error("Recieved error:\n", err);
@@ -387,7 +424,7 @@ const mainMenuOptions = [
   "Add Employee",
   "Update Employee Role (WIP)",
   "Add Role (WIP)",
-  "Add Department (WIP)",
+  "Add Department",
   "Quit",
 ];
 
