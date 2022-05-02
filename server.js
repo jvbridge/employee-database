@@ -193,9 +193,39 @@ function addEmployeeManager(firstName, lastName, role) {
  * to choose which info to update
  */
 function updateEmployeeRole() {
-  // TODO: get employee and change role
-  console.log("update employee role");
-  mainMenu();
+  console.info("First we need to select an employee to update their role");
+  selectDepartment((deptId) => {
+    selectRole(deptId, (roleId) => {
+      selectEmployee(roleId, (empId) => {
+        console.info("Now we need to select a new role.");
+        selectDepartment((newDeptId) => {
+          selectRole(newDeptId, (newRole) => {
+            // check if the user selected the same role
+            if (roleId === newRole) {
+              console.info("Good news! That's already their role!");
+              mainMenu();
+              return;
+            }
+            // at this point we know that the role is updated
+            db.query(
+              `
+            UPDATE employee
+            SET
+              role_id = ?
+            WHERE id = ?
+            `,
+              [newRole, empId],
+              (err, result) => {
+                if (err)
+                  console.error("Got an error updating the table:\n", err);
+                mainMenu();
+              }
+            );
+          });
+        });
+      });
+    });
+  });
 }
 
 /**
@@ -491,7 +521,7 @@ const mainMenuOptions = [
   "View All Departments",
   "View All Roles",
   "Add Employee",
-  "Update Employee Role (WIP)",
+  "Update Employee Role",
   "Add Role",
   "Add Department",
   "Quit",
