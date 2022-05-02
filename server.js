@@ -2,11 +2,13 @@ const inquirer = require("inquirer");
 const mysql = require("mysql2");
 // ctable isn't referenced because we an use `console.table` instead
 const cTable = require("console.table");
+const { add } = require("nodemon/lib/rules");
 
 // max lengths for all of the different values in the sql database
 const DEPARTMENT_NAME_LENGTH = 30;
 const ROLE_TITLE_LENGTH = 30;
 const EMPLOYEE_NAME_LENGTH = 30;
+const MAX_SALARY = 1000000000.0;
 
 // database connection
 const db = mysql.createConnection(
@@ -121,7 +123,9 @@ function addEmployeePrompt(rolesArray) {
         firstName.length > EMPLOYEE_NAME_LENGTH ||
         lastName.length > EMPLOYEE_NAME_LENGTH
       ) {
-        console.info("Names must be 30 characters or less");
+        console.info(
+          "Names must be " + EMPLOYEE_NAME_LENGTH + " characters or less"
+        );
         addEmployeePrompt();
         return;
       }
@@ -180,6 +184,8 @@ function addEmployeeManager(ans) {
     console.info("Looks like we couldn't find any employees to be a manager");
     mainMenu();
   });
+
+  // TODO: find role ID bug
 }
 
 /**
@@ -196,9 +202,72 @@ function updateEmployeeRole() {
  * This will allow the user to add more roles to the database
  */
 function addRole() {
-  // TODO: create a role and add to it
-  console.log("Add role");
-  mainMenu();
+  console.info(
+    "To start making a role we need to choose the department it's in"
+  );
+
+  selectDepartment((deptId) => {
+    if (!deptId) {
+      console.info(
+        "We need to set up a department before we can add any roles"
+      );
+      mainMenu();
+      return;
+    }
+    inquirer
+      .prompt([
+        {
+          name: "title",
+          type: "input",
+          message: "What is the tile for this role?",
+        },
+        {
+          name: "salary",
+          type: "number",
+          message: `What is their salary? Must be less than ${MAX_SALARY}`,
+        },
+      ])
+      .then((ans) => {
+        // validate title input
+        if (ans.title.length > ROLE_TITLE_LENGTH) {
+          console.info(
+            "Roles must have a title length of " +
+              ROLE_TITLE_LENGTH +
+              " or smaller"
+          );
+          addRole();
+          return;
+        }
+        // validate salary input
+        if (isNaN(ans.salary)) {
+          console.info("Salary must be a number");
+          addRole();
+          return;
+        }
+        if (ans.salary >= MAX_SALARY) {
+          console.info("Salary is too large for database");
+          addRole();
+          return;
+        }
+        if (ans.salary < 0) {
+          console.info("Salary cannot be negative");
+          addRole();
+          return;
+        }
+
+        db.query(
+          `
+          INSERT INTO role (title, salary, department_id)
+          VALUES (?, ?, ?)
+          `,
+          [ans.title, ans.salary, deptId],
+          (err, response) => {
+            if (err) console.error("Got an error inserting the role:\n", err);
+            mainMenu();
+          }
+        );
+      });
+  });
 }
 
 /**
@@ -423,7 +492,7 @@ const mainMenuOptions = [
   "View All Roles",
   "Add Employee",
   "Update Employee Role (WIP)",
-  "Add Role (WIP)",
+  "Add Role",
   "Add Department",
   "Quit",
 ];
