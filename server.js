@@ -41,6 +41,7 @@ function viewAllEmployees() {
       if (err) {
         console.error("Error in querying employees:\n", err);
       } else {
+        if (result.length === 0) console.info("No employees added yet");
         console.table(result);
         mainMenu();
       }
@@ -60,6 +61,12 @@ function addEmployeeQuery() {
     if (err) {
       console.error("Error in querying roles:\n", err);
     } else {
+      // ensure that there are roles set up before adding an employee
+      if (result.length === 0) {
+        console.info("We don't have any roles set up! Set up a role first!");
+        mainMenu();
+        return;
+      }
       addEmployeePrompt(result);
     }
   });
@@ -150,15 +157,15 @@ function addEmployee(firstName, lastName, roleId, manager) {
 function addEmployeeManager(ans) {
   const { firstName, lastName, role } = ans;
   console.info("Okay, lets select which employee will be their manager!");
-  // get the department of their manager
-  selectDepartment((deptId) => {
-    // get the role of the manager
-    selectRole(deptId, (roleId) => {
-      // get the manager's id
-      selectEmployee(roleId, (managerId) => {
-        addEmployee(firstName, lastName, roleId, managerId);
-      });
-    });
+  // helper function promts user to select the employee
+  employeeSelector((manager) => {
+    // selecting managers
+    if (manager) {
+      addEmployee(firstName, lastName, roleId, manager);
+      return;
+    }
+    console.info("Looks like we couldn't find any employees to be a manager");
+    mainMenu();
   });
 }
 
@@ -182,13 +189,37 @@ function addRole() {
 }
 
 /**
+ * Prompts the user to select an employee by first asking about which department
+ * and then their role, will then invoke a call back function with their id as
+ * an argument. The id will be null if no employees are found.
+ * @callback cb
+ */
+function employeeSelector(cb) {
+  selectDepartment((deptId) => {
+    if (!deptId) {
+      cb(null);
+      return;
+    }
+    selectRole(deptId, (roleId) => {
+      if (!roleId) {
+        cb(null);
+        return;
+      }
+      selectEmployee(roleId, (empId) => {
+        cb(empId);
+      });
+    });
+  });
+}
+
+/**
  * Prompts the user to select employees by role. Will list all given employees
  * with that role and then ask the user to choose one. After the user chooses
  * one the callback function will be executed with that employee's id as the
  * argument. If there are none found we will execute it with null as the
  * argument
  * @param {number} role  id number of the role
- * @param {function} cb callback function to execute
+ * @callback cb
  */
 function selectEmployee(role, cb) {
   // get all employees of the appropriate role
@@ -228,7 +259,7 @@ function selectEmployee(role, cb) {
  * Prompts the user to select a department. Calls a callback function with a
  * department ID as the argument, if there are no deparments given we call it
  * with null as an argument
- * @param {function} cb callback function supplied
+ * @callback cb
  */
 function selectDepartment(cb) {
   // main query
@@ -264,7 +295,7 @@ function selectDepartment(cb) {
  * Prompts the user to select a role with the given department, calls a callback
  * function with the id of the role selected
  * @param {number} department the ID of the department we are looking for roles
- * @param {function} cb the callback function
+ * @callback cb
  */
 function selectRole(department, cb) {
   // query db
@@ -308,6 +339,7 @@ function viewAllDepartments() {
       if (err) {
         console.error("Got an error querying departments:\n", err);
       }
+      if (result.length === 0) console.info("No departments set up yet");
       console.table(result);
       mainMenu();
     }
@@ -340,6 +372,7 @@ function viewAllRoles() {
       if (err) {
         console.error("Recieved error:\n", err);
       }
+      if (result.length === 0) console.info("No roles set up yet");
       console.table(result);
       mainMenu();
     }
