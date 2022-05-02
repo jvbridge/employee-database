@@ -161,7 +161,7 @@ function addEmployeeManager(ans) {
   employeeSelector((manager) => {
     // selecting managers
     if (manager) {
-      addEmployee(firstName, lastName, roleId, manager);
+      addEmployee(firstName, lastName, role, manager);
       return;
     }
     console.info("Looks like we couldn't find any employees to be a manager");
