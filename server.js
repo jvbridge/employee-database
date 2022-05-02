@@ -132,7 +132,7 @@ function addEmployeePrompt(rolesArray) {
 
       if (manager) {
         // if they want to add a manager we need a separate query
-        addEmployeeManager(ans);
+        addEmployeeManager(firstName, lastName, roleId);
       } else {
         addEmployee(firstName, lastName, roleId);
       }
@@ -168,11 +168,13 @@ function addEmployee(firstName, lastName, roleId, manager) {
 }
 
 /**
- * This function is called when the employee wants to designate an employee as
- * a manager for a new employee.
+ * Prompts the user to select an employee to be the manager of the new employee
+ * being made. The arguments given were prompts already answered by the user.
+ * @param {string} firstName - first name string inputted
+ * @param {string} lastName - last name string inputted
+ * @param {number} role - id of the role that was selected
  */
-function addEmployeeManager(ans) {
-  const { firstName, lastName, role } = ans;
+function addEmployeeManager(firstName, lastName, role) {
   console.info("Okay, lets select which employee will be their manager!");
   // helper function promts user to select the employee
   employeeSelector((manager) => {
@@ -184,8 +186,6 @@ function addEmployeeManager(ans) {
     console.info("Looks like we couldn't find any employees to be a manager");
     mainMenu();
   });
-
-  // TODO: find role ID bug
 }
 
 /**
