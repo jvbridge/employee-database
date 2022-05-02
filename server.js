@@ -350,9 +350,29 @@ function viewAllDepartments() {
  * This will allow the user add a new department
  */
 function addDepartment() {
-  // TODO: prompts for departments
-  console.log("Add Department");
-  mainMenu();
+  inquirer
+    .prompt({
+      name: "deptName",
+      type: "input",
+      message: "What is the name of this department?",
+    })
+    .then((ans) => {
+      if (ans.deptName.length > 30) {
+        console.info("Department names must be 30 characters or less");
+        addDepartment();
+        return;
+      }
+      db.query(
+        `INSERT INTO department(department_name)
+          VALUES (?)
+        `,
+        ans.deptName,
+        (err, result) => {
+          if (err) console.error("Error inserting into department:\n", err);
+          mainMenu();
+        }
+      );
+    });
 }
 
 /**
@@ -362,12 +382,12 @@ function addDepartment() {
 function viewAllRoles() {
   db.query(
     `SELECT title AS \`Title\`, (
-            SELECT 
-            department_name 
-            FROM department 
-            WHERE id = role.department_id
-        ) AS Department
-        , salary FROM role`,
+        SELECT 
+        department_name 
+        FROM department 
+        WHERE id = role.department_id
+    ) AS Department
+    , salary FROM role`,
     (err, result) => {
       if (err) {
         console.error("Recieved error:\n", err);
@@ -387,7 +407,7 @@ const mainMenuOptions = [
   "Add Employee",
   "Update Employee Role (WIP)",
   "Add Role (WIP)",
-  "Add Department (WIP)",
+  "Add Department",
   "Quit",
 ];
 
