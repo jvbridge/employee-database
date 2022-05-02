@@ -37,7 +37,6 @@ const greetStr = `
  * to the main menu
  */
 function viewAllEmployees() {
-  console.info("Querying the database...");
   db.query(
     `SELECT 
         CONCAT(employee.first_name, ' ', employee.last_name) AS Name,
@@ -57,13 +56,35 @@ function viewAllEmployees() {
 }
 
 /**
+ * Lets the user view all the employees but sorted by who their manager is
+ */
+function viewAllEmployeesByManager() {
+  db.query(
+    `
+    SELECT 
+    IFNULL(CONCAT(m.first_name, ' ', m.last_name), 'Top Manager') AS Manager,
+    CONCAT(e.first_name, ' ', e.last_name) AS Name
+    FROM employee e
+    LEFT JOIN employee m ON
+      m.id = e.manager_id
+    ORDER BY
+      m.last_name
+    `,
+    (err, result) => {
+      if (err) console.error("Error in querying employees:\n", err);
+      if (result.length === 0) console.info("No employees added yet");
+      console.table(result);
+      mainMenu();
+    }
+  );
+}
+
+/**
  * Function is called when we are making a new employee. It queries the database
  * to find the appropriate roles for the employee and then hands the output off
  * to a helper function to avoid more "callback hell"
  */
 function addEmployeeQuery() {
-  console.info("Querying the database...");
-
   db.query(`SELECT role.id, role.title FROM role`, (err, result) => {
     if (err) {
       console.error("Error in querying roles:\n", err);
@@ -517,6 +538,7 @@ function viewAllRoles() {
 
 // options for the main menu
 const mainMenuOptions = [
+  "View All Employees By Manager",
   "View All Employees",
   "View All Departments",
   "View All Roles",
@@ -541,6 +563,9 @@ function mainMenu() {
     })
     .then((ans) => {
       switch (ans.menuChoice) {
+        case "View All Employees By Manager":
+          viewAllEmployeesByManager();
+          break;
         case "View All Employees":
           viewAllEmployees();
           break;
