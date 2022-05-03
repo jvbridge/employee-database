@@ -540,16 +540,31 @@ function viewAllRoles() {
   );
 }
 
+/**
+ * Prompts the user to designate an employee and then select an employee to
+ * designate as their manager
+ */
+function updateEmployeeManager() {
+  console.info("Which employee are we selecting as a manager?");
+  employeeSelector((empId) => {
+    console.info("Which employee is their manager?");
+    employeeSelector((manId) => {
+      console.info(`Setting empID ${empId} to be managed by ${manId}`);
+    });
+  });
+}
+
 // options for the main menu
 const mainMenuOptions = [
-  "View All Employees By Manager",
   "View All Employees",
   "View All Departments",
   "View All Roles",
   "Add Employee",
   "Update Employee Role",
+  "Update Employee Manager",
   "Add Role",
   "Add Department",
+  "View All Employees By Manager",
   "Quit",
 ];
 
@@ -567,6 +582,9 @@ function mainMenu() {
     })
     .then((ans) => {
       switch (ans.menuChoice) {
+        case "Update Employee Manager":
+          updateEmployeeManager();
+          break;
         case "View All Employees By Manager":
           viewAllEmployeesByManager();
           break;
