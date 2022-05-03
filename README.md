@@ -15,6 +15,8 @@ Open mysql in the command line and source the file at `./db/schema.sql`,
 optionally source `./db/seeds.sql` if you want to populate the database with
 some data.
 
+https://user-images.githubusercontent.com/6423593/166390785-5838f44c-c4aa-408b-ace8-14488fd8bc81.mp4
+
 This project assumes that the mysql root user's password is `"password"` if you
 wish to use a different password you will need to alter `./server.js` to
 connect differently.
@@ -29,6 +31,8 @@ Some assumtions:
 Because of this when asking the user to specify an employee, we first ask them
 to specify a department and then specify a role. Similarly when asking to
 specify a role we ask them to specify a department first.
+
+
 
 | Technologies used                                                                                                                   |
 | ----------------------------------------------------------------------------------------------------------------------------------- |
