@@ -40,7 +40,7 @@ function viewAllEmployees() {
   db.query(
     `SELECT 
     CONCAT(e.first_name, ' ', e.last_name) AS Name,
-    role.title AS title, 
+    role.title AS Title, 
     IFNULL(CONCAT(m.first_name, ' ', m.last_name), 'Top Manager') AS Manager
     FROM employee e
     LEFT JOIN employee m ON
