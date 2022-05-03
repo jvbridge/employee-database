@@ -2,7 +2,6 @@ const inquirer = require("inquirer");
 const mysql = require("mysql2");
 // ctable isn't referenced because we an use `console.table` instead
 const cTable = require("console.table");
-const { add } = require("nodemon/lib/rules");
 
 // max lengths for all of the different values in the sql database
 const DEPARTMENT_NAME_LENGTH = 30;
