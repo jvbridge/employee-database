@@ -542,16 +542,58 @@ function viewAllRoles() {
 
 /**
  * Prompts the user to designate an employee and then select an employee to
- * designate as their manager
+ * designate as their manager, or choose to make the employee have no manager
  */
 function updateEmployeeManager() {
-  console.info("Which employee are we selecting as a manager?");
+  console.info("Which employee are we selecting to get a new manager?");
   employeeSelector((empId) => {
-    console.info("Which employee is their manager?");
-    employeeSelector((manId) => {
-      console.info(`Setting empID ${empId} to be managed by ${manId}`);
-    });
+    inquirer
+      .prompt({
+        name: "managerChoice",
+        type: "list",
+        message:
+          "Are we giving the employee a new manager or removing their manager?",
+        choices: ["New manager", "Removing manager"],
+      })
+      .then((ans) => {
+        // if we asked for no manager
+        if (ans.managerChoice === "Removing manager") {
+          // helper function
+          setManager(empId, null);
+          // return to the main menu and do nothing else
+          mainMenu();
+          return;
+        }
+        // they asked to set a new manager
+        employeeSelector((manId) => {
+          // helper function
+          setManager(empId, manId);
+          // return to the main menu
+          mainMenu();
+        });
+      });
   });
+}
+
+/**
+ * Set the manager of the employ given in empId. Sets it to no manager if
+ * manId is null.
+ * @param {number} empId
+ * @param {number | null} manId
+ */
+function setManager(empId, manId) {
+  db.query(
+    `
+    UPDATE employee
+    SET
+    manager_id =?
+    WHERE id = ?
+    `,
+    [manId, empId],
+    (err, result) => {
+      if (err) console.error("Got an error updateing the manager:\n", err);
+    }
+  );
 }
 
 // options for the main menu
