@@ -35,8 +35,12 @@ specify a role we ask them to specify a department first.
 | [![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)](https://git-scm.com/)         |
 | [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/) |
 | [![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/en/)   |
+| [![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)    |
 
 ## Credits
+
+Markdown badges shamelessly pinched from:
+https://github.com/Ileriayo/markdown-badges
 
 Greeting string made with the help of https://patorjk.com/software/taag
 
