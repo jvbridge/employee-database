@@ -540,16 +540,73 @@ function viewAllRoles() {
   );
 }
 
+/**
+ * Prompts the user to designate an employee and then select an employee to
+ * designate as their manager, or choose to make the employee have no manager
+ */
+function updateEmployeeManager() {
+  console.info("Which employee are we selecting to get a new manager?");
+  employeeSelector((empId) => {
+    inquirer
+      .prompt({
+        name: "managerChoice",
+        type: "list",
+        message:
+          "Are we giving the employee a new manager or removing their manager?",
+        choices: ["New manager", "Removing manager"],
+      })
+      .then((ans) => {
+        // if we asked for no manager
+        if (ans.managerChoice === "Removing manager") {
+          // helper function
+          setManager(empId, null);
+          // return to the main menu and do nothing else
+          mainMenu();
+          return;
+        }
+        // they asked to set a new manager
+        employeeSelector((manId) => {
+          // helper function
+          setManager(empId, manId);
+          // return to the main menu
+          mainMenu();
+        });
+      });
+  });
+}
+
+/**
+ * Set the manager of the employ given in empId. Sets it to no manager if
+ * manId is null.
+ * @param {number} empId
+ * @param {number | null} manId
+ */
+function setManager(empId, manId) {
+  db.query(
+    `
+    UPDATE employee
+    SET
+    manager_id =?
+    WHERE id = ?
+    `,
+    [manId, empId],
+    (err, result) => {
+      if (err) console.error("Got an error updateing the manager:\n", err);
+    }
+  );
+}
+
 // options for the main menu
 const mainMenuOptions = [
-  "View All Employees By Manager",
   "View All Employees",
   "View All Departments",
   "View All Roles",
   "Add Employee",
   "Update Employee Role",
+  "Update Employee Manager",
   "Add Role",
   "Add Department",
+  "View All Employees By Manager",
   "Quit",
 ];
 
@@ -567,6 +624,9 @@ function mainMenu() {
     })
     .then((ans) => {
       switch (ans.menuChoice) {
+        case "Update Employee Manager":
+          updateEmployeeManager();
+          break;
         case "View All Employees By Manager":
           viewAllEmployeesByManager();
           break;
